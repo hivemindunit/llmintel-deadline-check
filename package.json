@@ -1,0 +1,71 @@
+{
+  "name": "@llmintel/deadline-check",
+  "version": "0.1.0",
+  "description": "GitHub Action that scans a repo for hard-coded LLM model ids and warns when LLMIntel shows them deprecated or retiring soon.",
+  "keywords": [
+    "github-actions",
+    "llm",
+    "deprecation",
+    "model-lifecycle",
+    "openai",
+    "anthropic",
+    "bedrock"
+  ],
+  "license": "MIT",
+  "homepage": "https://llmintel.ai",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hivemindunit/llmintel-deadline-check.git"
+  },
+  "bugs": {
+    "url": "https://github.com/hivemindunit/llmintel-deadline-check/issues"
+  },
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "action.yml",
+    "README.md",
+    "LICENSE",
+    "examples"
+  ],
+  "packageManager": "pnpm@10.15.0",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "scripts": {
+    "build": "tsup && node ./scripts/write-dist-package.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "prepublishOnly": "pnpm run build"
+  },
+  "dependencies": {
+    "@actions/core": "^1.11.1",
+    "@actions/github": "^6.0.1",
+    "fast-glob": "^3.3.3",
+    "minimatch": "^10.0.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
+  }
+}

@@ -1,0 +1,74 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Test and verify dist
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.15.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Test
+        run: pnpm test
+
+      - name: Build
+        run: pnpm build
+
+      - name: Verify committed dist matches source
+        run: |
+          git diff --exit-code -- dist/ || {
+            echo "::error::dist/ is out of date. Run 'pnpm build' and commit dist/."
+            git status --short dist/
+            exit 1
+          }
+
+  self-test:
+    name: Self-test action
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run deadline-check against this repo
+        id: check
+        uses: ./
+        with:
+          days_ahead: "120"
+          # Never fail the self-test job on hits; we only assert the action runs.
+          fail_within_days: ""
+          comment_on_pr: "false"
+          create_issue: "false"
+          # Limit scan to source so the bundled dist does not dominate runtime.
+          paths: "src/**/*.ts,action.yml,README.md,examples/**/*.yml"
+          exclude: "**/node_modules/**,**/.git/**,**/dist/**"
+
+      - name: Assert action outputs
+        run: |
+          echo "hit_count=${{ steps.check.outputs.hit_count }}"
+          echo "model_count=${{ steps.check.outputs.model_count }}"
+          echo "failing=${{ steps.check.outputs.failing }}"
+          test -n "${{ steps.check.outputs.hit_count }}"
+          test -n "${{ steps.check.outputs.model_count }}"
+          test "${{ steps.check.outputs.failing }}" = "false"

@@ -1,0 +1,68 @@
+name: LLM Model Deadline Check
+description: >
+  Scan the repository for hard-coded LLM model ids and warn when LLMIntel shows them
+  deprecated or retiring soon. No API key required.
+author: LLMIntel
+branding:
+  icon: alert-triangle
+  color: orange
+
+inputs:
+  days_ahead:
+    description: Warn when a model retires within this many days (also includes already-retired ids).
+    required: false
+    default: "120"
+  fail_within_days:
+    description: >
+      Fail the job when any hit retires within this many days (or is already retired).
+      Leave empty to never fail the job.
+    required: false
+    default: ""
+  providers:
+    description: >
+      Comma-separated providers to consider (openai, anthropic, azure, bedrock, google, vertex,
+      mistral, cohere). Empty means all.
+    required: false
+    default: ""
+  paths:
+    description: Comma-separated globs to scan (relative to the workspace).
+    required: false
+    default: "**/*.{ts,tsx,js,jsx,mjs,cjs,py,go,rs,yml,yaml,json,toml,md,env*}"
+  exclude:
+    description: Comma-separated globs to skip.
+    required: false
+    default: "**/node_modules/**,**/.git/**,**/dist/**,**/vendor/**,**/.next/**,**/coverage/**,**/build/**"
+  api_base:
+    description: LLMIntel API base URL.
+    required: false
+    default: "https://llmintel.ai"
+  comment_on_pr:
+    description: Post or update a pull-request comment when running on a pull_request event.
+    required: false
+    default: "true"
+  create_issue:
+    description: >
+      Open or update a single tracking issue titled "Model deadlines found by LLMIntel"
+      (useful on schedule). Closed automatically when the checklist is empty.
+    required: false
+    default: "false"
+  issue_labels:
+    description: Comma-separated labels for the tracking issue (create_issue must be true).
+    required: false
+    default: "llmintel-deadline-check"
+  github_token:
+    description: Token used for PR comments and issues. Defaults to the workflow GITHUB_TOKEN.
+    required: false
+    default: ${{ github.token }}
+
+outputs:
+  hit_count:
+    description: Number of (model × file:line) deadline hits found.
+  model_count:
+    description: Number of distinct model ids with deadline hits.
+  failing:
+    description: "true" when the job failed due to fail_within_days.
+
+runs:
+  using: node20
+  main: dist/index.js
