@@ -1,0 +1,29 @@
+# Copy into .github/workflows/llmintel-deadline-check.yml
+name: LLM Model Deadline Check
+
+on:
+  schedule:
+    # Mondays at 14:00 UTC
+    - cron: "0 14 * * 1"
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: hivemindunit/llmintel-deadline-check@v1
+        with:
+          days_ahead: "120"
+          # Fail CI when something retires within two weeks (optional).
+          fail_within_days: "14"
+          comment_on_pr: "true"
+          # On the Monday schedule, keep one rolling tracking issue up to date.
+          create_issue: "true"
