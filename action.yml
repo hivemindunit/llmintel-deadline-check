@@ -1,7 +1,5 @@
 name: LLM Model Deadline Check
-description: >
-  Scan the repository for hard-coded LLM model ids and warn when LLMIntel shows them
-  deprecated or retiring soon. No API key required.
+description: Warns when your repo uses LLM model IDs that are deprecated or close to retirement, using LLMIntel data.
 author: LLMIntel
 branding:
   icon: alert-triangle
