@@ -53,7 +53,7 @@ inputs:
   github_token:
     description: Token used for PR comments and issues. Defaults to the workflow GITHUB_TOKEN.
     required: false
-    default: ${{ github.token }}
+    default: "${{ github.token }}"
 
 outputs:
   hit_count:
@@ -61,7 +61,7 @@ outputs:
   model_count:
     description: Number of distinct model ids with deadline hits.
   failing:
-    description: "true" when the job failed due to fail_within_days.
+    description: '"true" when the job failed due to fail_within_days.'
 
 runs:
   using: node20
